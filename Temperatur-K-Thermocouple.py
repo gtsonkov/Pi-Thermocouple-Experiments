@@ -17,20 +17,26 @@ def read(ds18b20):
     celsius = temperature / 1000
     farenheit = (celsius * 1.8) + 32
     return celsius, farenheit
+def writeData (data):
+    try:
+         tempWriter = open("/media/tresor/Thermolog/temperaturLog.txt", "a")
+         tempWriter.write(data)
+         tempWriter.write("\n")
+         tempWriter.close
+        
+    except IOError:
+        print("Could not open file or directory. Please check USB Stick!")
+    
 def loop(ds18b20):
 
-     try: 
-        tempWriter = open("/home/pi/Desktop/temperaturLog.txt", "a")
-        while True:
+     while True:
          now = datetime.now()
-         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-         currTemp = dt_string + "--Temperatur T1 : %0.3f C" % read(ds18b20)[0]
-         tempWriter.write(currTemp)
-         tempWriter.write("\n")
+         currTime = now.strftime("%d/%m/%Y %H:%M:%S")
+         currTemp =(currTime + "--Temperatur T1 : %0.3f C" % read(ds18b20)[0])
+         writeData(currTemp)
          print (currTemp)
          time.sleep(0.2)
-     except IOError:
-        print("Could not open file or directory. Please check USB Stick!")
+     
 def kill():
     quit()
 if __name__ == '__main__':
