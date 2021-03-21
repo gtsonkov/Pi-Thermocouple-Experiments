@@ -1,4 +1,6 @@
 import os
+import time
+from datetime import datetime
 def sensor():
     for i in os.listdir('/sys/bus/w1/devices'):
         if i != 'w1_bus_master1':
@@ -16,20 +18,19 @@ def read(ds18b20):
     farenheit = (celsius * 1.8) + 32
     return celsius, farenheit
 def loop(ds18b20):
-    try: 
-    tempWriter = open("/media/tresor/Thermolog/temperaturLog.txt", "a")
-    
-    except IOError:
+
+     try: 
+        tempWriter = open("/home/pi/Desktop/temperaturLog.txt", "a")
+        while True:
+         now = datetime.now()
+         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+         currTemp = dt_string + "--Temperatur T1 : %0.3f C" % read(ds18b20)[0]
+         tempWriter.write(currTemp)
+         tempWriter.write("\n")
+         print (currTemp)
+         time.sleep(0.2)
+     except IOError:
         print("Could not open file or directory. Please check USB Stick!")
-    
-    while True:
-        if read(ds18b20) != None:
-            currTemp = "Temperatur T1 : %0.3f C" % read(ds18b20)[0]
-            if tempWriter.open
-            tempWriter.write(currTemp)
-            tempWriter.write("\n")
-            
-            print currTemp
 def kill():
     quit()
 if __name__ == '__main__':
