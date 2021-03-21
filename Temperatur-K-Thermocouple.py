@@ -16,9 +16,20 @@ def read(ds18b20):
     farenheit = (celsius * 1.8) + 32
     return celsius, farenheit
 def loop(ds18b20):
+    try: 
+    tempWriter = open("/media/tresor/Thermolog/temperaturLog.txt", "a")
+    
+    except IOError:
+        print("Could not open file or directory. Please check USB Stick!")
+    
     while True:
         if read(ds18b20) != None:
-            print "Current temperature : %0.3f C" % read(ds18b20)[0]
+            currTemp = "Temperatur T1 : %0.3f C" % read(ds18b20)[0]
+            if tempWriter.open
+            tempWriter.write(currTemp)
+            tempWriter.write("\n")
+            
+            print currTemp
 def kill():
     quit()
 if __name__ == '__main__':
