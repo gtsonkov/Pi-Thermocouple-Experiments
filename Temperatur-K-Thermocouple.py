@@ -1,11 +1,14 @@
+import asyncio
 import os
 import time
 from datetime import datetime
+
 def sensor():
     for i in os.listdir('/sys/bus/w1/devices'):
         if i != 'w1_bus_master1':
             ds18b20 = i
     return ds18b20
+
 def read(ds18b20):
     location = '/sys/bus/w1/devices/' + ds18b20 + '/w1_slave'
     tfile = open(location)
@@ -17,31 +20,33 @@ def read(ds18b20):
     celsius = temperature / 1000
     farenheit = (celsius * 1.8) + 32
     return celsius, farenheit
-def writeData (data):
+
+
+async def writeData (data):
     try:
-         tempWriter = open("/media/tresor/Thermolog/temperaturLog.txt", "a")
-         tempWriter.write(data)
-         tempWriter.write("\n")
-         tempWriter.close
-        
+        tw = open("/media/tresor/Thermolog/temperaturLog.txt", "a")
+        tw.write(data)
+        tw.write("\n")
+        tw.close
     except IOError:
         print("Could not open file or directory. Please check USB Stick!")
     
-def loop(ds18b20):
+async def loop(ds18b20):
 
      while True:
          now = datetime.now()
          currTime = now.strftime("%d/%m/%Y %H:%M:%S")
          currTemp =(currTime + "--Temperatur T1 : %0.3f C" % read(ds18b20)[0])
-         writeData(currTemp)
+         await writeData(currTemp)
          print (currTemp)
-         time.sleep(0.2)
+         time.sleep(0.3)
      
 def kill():
     quit()
 if __name__ == '__main__':
     try:
         serialNum = sensor()
-        loop(serialNum)
+        loops = asyncio.get_event_loop()
+        loops.run_until_complete(loop(serialNum))
     except KeyboardInterrupt:
         kill()
